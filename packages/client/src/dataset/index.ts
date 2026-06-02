@@ -1,0 +1,325 @@
+import { Dataset, DatasetRunItem, DatasetItem } from "@agentinsight-sdk/core";
+import { Span } from "@opentelemetry/api";
+
+import { AgentInsightClient } from "../AgentInsightClient.js";
+import { ExperimentResult, ExperimentParams } from "../experiment/types.js";
+
+/**
+ * Function type for running experiments on AgentInsight datasets.
+ *
+ * This function type is attached to fetched datasets to enable convenient
+ * experiment execution directly on dataset objects.
+ *
+ * @param params - Experiment parameters excluding data (since data comes from the dataset)
+ * @returns Promise resolving to experiment results
+ *
+ * @example
+ * ```typescript
+ * const dataset = await agentInsight.dataset.get("my-dataset");
+ * const result = await dataset.runExperiment({
+ *   name: "Model Evaluation",
+ *   runName: "Model Evaluation Run 1", // optional
+ *   task: myTask,
+ *   evaluators: [myEvaluator]
+ * });
+ * ```
+ *
+ * @public
+ * @since 4.0.0
+ */
+export type RunExperimentOnDataset = (
+  params: Omit<ExperimentParams<any, any, Record<string, any>>, "data">,
+) => Promise<ExperimentResult<any, any, Record<string, any>>>;
+
+/**
+ * Enhanced dataset object with additional methods for linking and experiments.
+ *
+ * This type extends the base Dataset with functionality for:
+ * - Linking dataset items to traces/observations
+ * - Running experiments directly on the dataset
+ *
+ * @example Working with a fetched dataset
+ * ```typescript
+ * const dataset = await agentInsight.dataset.get("my-evaluation-dataset");
+ *
+ * // Access dataset metadata
+ * console.log(dataset.name, dataset.description);
+ *
+ * // Work with individual items
+ * for (const item of dataset.items) {
+ *   console.log(item.input, item.expectedOutput);
+ *
+ *   // Link item to a trace
+ *   await item.link(myObservation, "experiment-run-1");
+ * }
+ *
+ * // Run experiments on the entire dataset
+ * const result = await dataset.runExperiment({
+ *   name: "Model Comparison",
+ *   task: myTask,
+ *   evaluators: [accuracyEvaluator]
+ * });
+ * ```
+ *
+ * @public
+ * @since 4.0.0
+ */
+export type FetchedDataset = Dataset & {
+  /** Dataset items with additional linking functionality */
+  items: (DatasetItem & { link: LinkDatasetItemFunction })[];
+  /** ISO 8601 timestamp (RFC 3339, Section 5.6) in UTC (e.g., "2026-01-21T14:35:42Z").
+   * If provided, returns state of dataset at this timestamp.
+   * If not provided, returns the latest version.
+   */
+  version?: string;
+  /** Function to run experiments directly on this dataset */
+  runExperiment: RunExperimentOnDataset;
+};
+
+/**
+ * Function type for linking dataset items to OpenTelemetry spans.
+ *
+ * This function creates a connection between a dataset item and a trace/observation,
+ * enabling tracking of which dataset items were used in which experiments or runs.
+ * This is essential for creating dataset runs and tracking experiment lineage.
+ *
+ * @param obj - Object containing the OpenTelemetry span to link to
+ * @param obj.otelSpan - The OpenTelemetry span from an AgentInsight observation
+ * @param runName - Name of the experiment run for grouping related items
+ * @param runArgs - Optional configuration for the dataset run
+ * @param runArgs.description - Description of the experiment run
+ * @param runArgs.metadata - Additional metadata to attach to the run
+ * @returns Promise that resolves to the created dataset run item
+ *
+ * @example Basic linking
+ * ```typescript
+ * const dataset = await agentInsight.dataset.get("my-dataset");
+ * const span = startObservation("my-task", { input: "test" });
+ * span.update({ output: "result" });
+ * span.end();
+ *
+ * // Link the dataset item to this execution
+ * await dataset.items[0].link(
+ *   { otelSpan: span.otelSpan },
+ *   "experiment-run-1"
+ * );
+ * ```
+ *
+ * @example Linking with metadata
+ * ```typescript
+ * await dataset.items[0].link(
+ *   { otelSpan: span.otelSpan },
+ *   "model-comparison-v2",
+ *   {
+ *     description: "Comparing GPT-4 vs Claude performance",
+ *     metadata: {
+ *       modelVersion: "gpt-4-1106-preview",
+ *       temperature: 0.7,
+ *       timestamp: new Date().toISOString()
+ *     }
+ *   }
+ * );
+ * ```
+ *
+ * @see {@link https://agentinsight.com/docs/datasets} AgentInsight datasets documentation
+ * @public
+ * @since 4.0.0
+ */
+export type LinkDatasetItemFunction = (
+  obj: { otelSpan: Span },
+  runName: string,
+  runArgs?: {
+    /** Description of the dataset run */
+    description?: string;
+    /** Additional metadata for the dataset run */
+    metadata?: any;
+  },
+) => Promise<DatasetRunItem>;
+
+/**
+ * Manager for dataset operations in AgentInsight.
+ *
+ * Provides methods to retrieve datasets and their items, with automatic
+ * pagination handling and convenient linking functionality for experiments.
+ *
+ * @public
+ */
+export class DatasetManager {
+  private agentInsightClient: AgentInsightClient;
+
+  /**
+   * Creates a new DatasetManager instance.
+   *
+   * @param params - Configuration object containing the API client
+   * @internal
+   */
+  constructor(params: { agentInsightClient: AgentInsightClient }) {
+    this.agentInsightClient = params.agentInsightClient;
+  }
+
+  /**
+   * Retrieves a dataset by name with all its items and experiment functionality.
+   *
+   * This method fetches a dataset and all its associated items, with support
+   * for automatic pagination to handle large datasets efficiently. The returned
+   * dataset object includes enhanced functionality for linking items to traces
+   * and running experiments directly on the dataset.
+   *
+   * @param name - The name of the dataset to retrieve
+   * @param options - Optional configuration for data fetching
+   * @param options.fetchItemsPageSize - Number of items to fetch per page (default: 50)
+   * @returns Promise resolving to enhanced dataset with items, linking, and experiment capabilities
+   *
+   * @example Basic dataset retrieval
+   * ```typescript
+   * const dataset = await agentInsight.dataset.get("my-evaluation-dataset");
+   * console.log(`Dataset ${dataset.name} has ${dataset.items.length} items`);
+   *
+   * // Access dataset properties
+   * console.log(dataset.description);
+   * console.log(dataset.metadata);
+   * ```
+   *
+   * @example Working with dataset items
+   * ```typescript
+   * const dataset = await agentInsight.dataset.get("qa-dataset");
+   *
+   * for (const item of dataset.items) {
+   *   console.log("Question:", item.input);
+   *   console.log("Expected Answer:", item.expectedOutput);
+   *
+   *   // Each item has a link function for connecting to traces
+   *   // await item.link(span, "experiment-name");
+   * }
+   * ```
+   *
+   * @example Running experiments on datasets
+   * ```typescript
+   * const dataset = await agentInsight.dataset.get("benchmark-dataset");
+   *
+   * const result = await dataset.runExperiment({
+   *   name: "GPT-4 Benchmark",
+   *   runName: "GPT-4 Benchmark v1.2", // optional exact run name
+   *   description: "Evaluating GPT-4 on our benchmark tasks",
+   *   task: async ({ input }) => {
+   *     const response = await openai.chat.completions.create({
+   *       model: "gpt-4",
+   *       messages: [{ role: "user", content: input }]
+   *     });
+   *     return response.choices[0].message.content;
+   *   },
+   *   evaluators: [
+   *     async ({ output, expectedOutput }) => ({
+   *       name: "exact_match",
+   *       value: output === expectedOutput ? 1 : 0
+   *     })
+   *   ]
+   * });
+   *
+   * console.log(await result.format());
+   * ```
+   *
+   * @example Handling large datasets
+   * ```typescript
+   * // For very large datasets, use smaller page sizes
+   * const largeDataset = await agentInsight.dataset.get(
+   *   "large-dataset",
+   *   { fetchItemsPageSize: 100 }
+   * );
+   * ```
+   *
+   * @throws {Error} If the dataset does not exist or cannot be accessed
+   * @see {@link FetchedDataset} for the complete return type specification
+   * @see {@link RunExperimentOnDataset} for experiment execution details
+   * @public
+   * @since 4.0.0
+   */
+  async get(
+    name: string,
+    options?: {
+      fetchItemsPageSize?: number;
+      /**
+       * ISO 8601 timestamp (RFC 3339, Section 5.6) in UTC (e.g., "2026-01-21T14:35:42Z").
+       * If provided, returns state of dataset at this timestamp.
+       * If not provided, returns the latest version.
+       */
+      version?: string;
+    },
+  ): Promise<FetchedDataset> {
+    const dataset = await this.agentInsightClient.api.datasets.get(name);
+    const items: DatasetItem[] = [];
+
+    let page = 1;
+
+    while (true) {
+      const itemsResponse = await this.agentInsightClient.api.datasetItems.list(
+        {
+          datasetName: name,
+          limit: options?.fetchItemsPageSize ?? 50,
+          page,
+          ...(options?.version && { version: options.version }),
+        },
+      );
+
+      items.push(...itemsResponse.data);
+
+      if (itemsResponse.meta.totalPages <= page) {
+        break;
+      }
+
+      page++;
+    }
+
+    const itemsWithLinkMethod = items.map((item) => ({
+      ...item,
+      link: this.createDatasetItemLinkFunction(item),
+    }));
+
+    const runExperiment: RunExperimentOnDataset = (params) => {
+      return this.agentInsightClient.experiment.run({
+        data: items,
+        datasetVersion: options?.version,
+        ...params,
+      });
+    };
+
+    const returnDataset = {
+      ...dataset,
+      items: itemsWithLinkMethod,
+      version: options?.version,
+      runExperiment,
+    };
+
+    return returnDataset;
+  }
+
+  /**
+   * Creates a link function for a specific dataset item.
+   *
+   * @param item - The dataset item to create a link function for
+   * @returns A function that can link the item to OpenTelemetry spans
+   * @internal
+   */
+  private createDatasetItemLinkFunction(
+    item: DatasetItem,
+  ): LinkDatasetItemFunction {
+    const linkFunction = async (
+      obj: { otelSpan: Span },
+      runName: string,
+      runArgs?: {
+        description?: string;
+        metadata?: any;
+      },
+    ): Promise<DatasetRunItem> => {
+      return await this.agentInsightClient.api.datasetRunItems.create({
+        runName,
+        datasetItemId: item.id,
+        traceId: obj.otelSpan.spanContext().traceId,
+        runDescription: runArgs?.description,
+        metadata: runArgs?.metadata,
+      });
+    };
+
+    return linkFunction;
+  }
+}

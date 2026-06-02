@@ -1,0 +1,11 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/core" },
+    { "path": "./packages/client" },
+    { "path": "./packages/tracing" },
+    { "path": "./packages/otel" },
+    { "path": "./packages/langchain" },
+    { "path": "./packages/openai" }
+  ]
+}

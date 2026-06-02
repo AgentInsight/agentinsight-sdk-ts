@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2019",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@agentinsight-sdk/client": ["../packages/client/dist/index.d.ts"],
+      "@agentinsight-sdk/core": ["../packages/core/src/index.ts"],
+      "@agentinsight-sdk/tracing": ["../packages/tracing/src/index.ts"],
+      "@agentinsight-sdk/otel": ["../packages/otel/src/index.ts"],
+      "@agentinsight-sdk/langchain": ["../packages/langchain/src/index.ts"],
+      "@agentinsight-sdk/openai": ["../packages/openai/src/index.ts"]
+    },
+    "types": ["vitest/globals", "@types/node"]
+  },
+  "include": ["**/*.ts", "**/*.js"],
+  "exclude": ["node_modules", "dist"]
+}

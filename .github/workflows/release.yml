@@ -1,0 +1,222 @@
+name: Release JS/TS SDK
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version bump type"
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+          - prepatch
+          - preminor
+          - premajor
+      prerelease_type:
+        description: "Pre-release type (used when version is prepatch/preminor/premajor)"
+        type: choice
+        default: ""
+        options:
+          - ""
+          - alpha
+          - beta
+          - rc
+      dry_run:
+        description: "Dry run (skip publish and git push)"
+        type: boolean
+        default: false
+      confirm_major:
+        description: "Type RELEASE MAJOR to confirm a major or premajor release"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+  id-token: write
+  pull-requests: write
+
+concurrency:
+  group: js-sdk-release
+  cancel-in-progress: false
+
+jobs:
+  release-js-sdk:
+    runs-on: ubuntu-latest
+    environment: protected branches
+    steps:
+      - name: Verify branch
+        run: |
+          if [ "${GITHUB_REF}" != "refs/heads/main" ]; then
+            echo "❌ Error: Releases can only be triggered from main branch"
+            echo "Current ref: ${GITHUB_REF}"
+            exit 1
+          fi
+      - name: Confirm major release
+        if: ${{ inputs.version == 'major' || inputs.version == 'premajor' }}
+        run: |
+          if [ "${INPUTS_CONFIRM_MAJOR}" != "RELEASE MAJOR" ]; then
+            echo "❌ For major/premajor releases, set confirm_major to RELEASE MAJOR"
+            exit 1
+          fi
+        env:
+          INPUTS_CONFIRM_MAJOR: ${{ inputs.confirm_major }}
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_ACCESS_TOKEN }}
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+          registry-url: "https://registry.npmjs.org"
+          cache: ""
+
+      - name: Configure Git
+        env:
+          GH_ACCESS_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
+        run: |
+          git config user.name "agentinsight-bot"
+          git config user.email "agentinsight-bot@goldebridge.com"
+
+          echo "$GH_ACCESS_TOKEN" | gh auth login --with-token
+          gh auth setup-git
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify lockfile integrity
+        run: |
+          echo "Verifying pnpm lockfile has not been tampered with..."
+          git diff --exit-code pnpm-lock.yaml || {
+            echo "❌ Error: pnpm-lock.yaml was modified during install"
+            exit 1
+          }
+
+      - name: Determine release parameters
+        id: release-params
+        env:
+          INPUTS_VERSION: ${{ inputs.version }}
+          INPUTS_PRERELEASE_TYPE: ${{ inputs.prerelease_type }}
+        run: |
+          version_type="${INPUTS_VERSION}"
+
+          if [ "$version_type" = "prepatch" ] || [ "$version_type" = "preminor" ] || [ "$version_type" = "premajor" ]; then
+            prerelease_type="${INPUTS_PRERELEASE_TYPE}"
+            if [ -z "$prerelease_type" ]; then
+              echo "❌ Error: prerelease_type must be specified when version is prepatch/preminor/premajor"
+              exit 1
+            fi
+
+            current_version=$(node -p "require('./package.json').version")
+            base_version="${current_version%%-*}"
+            IFS='.' read -r major minor patch <<< "$base_version"
+
+            if echo "$current_version" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+-'; then
+              current_is_prerelease="true"
+            else
+              current_is_prerelease="false"
+            fi
+
+            case "$version_type" in
+              premajor)
+                if [ "$current_is_prerelease" = "true" ] && [ "$minor" -eq 0 ] && [ "$patch" -eq 0 ]; then
+                  target_major=$major
+                else
+                  target_major=$((major + 1))
+                fi
+                target_minor=0
+                target_patch=0
+                ;;
+              preminor)
+                target_major=$major
+                if [ "$current_is_prerelease" = "true" ] && [ "$patch" -eq 0 ] && [ "$minor" -gt 0 ]; then
+                  target_minor=$minor
+                else
+                  target_minor=$((minor + 1))
+                fi
+                target_patch=0
+                ;;
+              prepatch)
+                target_major=$major
+                target_minor=$minor
+                if [ "$current_is_prerelease" = "true" ] && [ "$patch" -gt 0 ]; then
+                  target_patch=$patch
+                else
+                  target_patch=$((patch + 1))
+                fi
+                ;;
+            esac
+
+            target_base_version="${target_major}.${target_minor}.${target_patch}"
+            if [ "$current_is_prerelease" = "true" ] && [ "$base_version" = "$target_base_version" ]; then
+              release_increment="prerelease"
+            else
+              release_increment="$version_type"
+            fi
+
+            echo "release_increment=${release_increment}" >> $GITHUB_OUTPUT
+            echo "pre_release_flag=--preRelease=${prerelease_type}" >> $GITHUB_OUTPUT
+            echo "tag=${prerelease_type}" >> $GITHUB_OUTPUT
+          else
+            echo "release_increment=${version_type}" >> $GITHUB_OUTPUT
+            echo "pre_release_flag=" >> $GITHUB_OUTPUT
+            echo "tag=latest" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build all packages
+        run: pnpm build
+
+      - name: Verify build artifacts
+        run: |
+          echo "Verifying all packages have dist folders..."
+          for pkg in packages/*/package.json; do
+            pkg_dir=$(dirname $pkg)
+            pkg_name=$(basename $pkg_dir)
+            if [ ! -d "$pkg_dir/dist" ]; then
+              echo "❌ Error: Missing dist folder for $pkg_name"
+              exit 1
+            fi
+            echo "✅ $pkg_name: dist folder exists"
+          done
+
+          echo "Checking for suspicious files in dist folders..."
+          if find packages/*/dist -type f \( -name "*.sh" -o -name "*.exe" -o -name "*.bat" -o -name "*.cmd" \) | grep -q .; then
+            echo "❌ Error: Found suspicious executable files in dist folders"
+            find packages/*/dist -type f \( -name "*.sh" -o -name "*.exe" -o -name "*.bat" -o -name "*.cmd" \)
+            exit 1
+          fi
+          echo "✅ No suspicious files found"
+
+      - name: Run release-it (version, git, npm publish)
+        id: release
+        if: inputs.dry_run == false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
+          NPM_CONFIG_TAG: ${{ steps.release-params.outputs.tag }}
+          STEPS_RELEASE_PARAMS_OUTPUTS_RELEASE_INCREMENT: ${{ steps.release-params.outputs.release_increment }}
+          STEPS_RELEASE_PARAMS_OUTPUTS_PRE_RELEASE_FLAG: ${{ steps.release-params.outputs.pre_release_flag }}
+        run: |
+          pnpm exec release-it ${STEPS_RELEASE_PARAMS_OUTPUTS_RELEASE_INCREMENT} ${STEPS_RELEASE_PARAMS_OUTPUTS_PRE_RELEASE_FLAG} --ci --config .release-it.ci.json
+
+      - name: Run release-it (dry run)
+        if: inputs.dry_run == true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
+          NPM_CONFIG_TAG: ${{ steps.release-params.outputs.tag }}
+          STEPS_RELEASE_PARAMS_OUTPUTS_RELEASE_INCREMENT: ${{ steps.release-params.outputs.release_increment }}
+          STEPS_RELEASE_PARAMS_OUTPUTS_PRE_RELEASE_FLAG: ${{ steps.release-params.outputs.pre_release_flag }}
+        run: |
+          echo "🧪 Running in DRY RUN mode - no changes will be pushed"
+          pnpm exec release-it ${STEPS_RELEASE_PARAMS_OUTPUTS_RELEASE_INCREMENT} ${STEPS_RELEASE_PARAMS_OUTPUTS_PRE_RELEASE_FLAG} --ci --config .release-it.ci.json --dry-run
+
+      - name: Get version
+        id: version
+        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT

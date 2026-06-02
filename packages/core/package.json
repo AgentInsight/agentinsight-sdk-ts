@@ -1,0 +1,53 @@
+{
+  "name": "@agentinsight-sdk/core",
+  "version": "0.1.0",
+  "description": "Core functions and utilities for AgentInsight packages",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\"",
+    "clean": "rm -rf dist"
+  },
+  "author": "AgentInsight",
+  "license": "MIT",
+  "keywords": [
+    "agentinsight",
+    "observability",
+    "opentelemetry",
+    "tracing",
+    "ai",
+    "llm"
+  ],
+  "homepage": "https://agent.goldebridge.com",
+  "bugs": {
+    "url": "https://github.com/AgentInsightSDK/agentinsight-js/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agentinsight/agentinsight-js.git",
+    "directory": "packages/core"
+  },
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "@opentelemetry/api": "^1.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.1.0"
+  }
+}
