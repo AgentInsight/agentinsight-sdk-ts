@@ -528,8 +528,8 @@ bash scripts/codex/maintenance.sh  # 维护：重新安装依赖
 
 ### 14.2 各包 package 名称
 
-| 目录                 | npm 包名                  |
-| -------------------- | ------------------------- |
+| 目录                 | npm 包名                      |
+| -------------------- | ----------------------------- |
 | `packages/core`      | `@agentinsight-sdk/core`      |
 | `packages/client`    | `@agentinsight-sdk/client`    |
 | `packages/tracing`   | `@agentinsight-sdk/tracing`   |
@@ -557,8 +557,8 @@ bash scripts/codex/maintenance.sh  # 维护：重新安装依赖
 
 进行变更时，注意以下影响关系：
 
-| 变更包                    | 影响的包                  |
-| ------------------------- | ------------------------- |
+| 变更包                        | 影响的包                  |
+| ----------------------------- | ------------------------- |
 | `@agentinsight-sdk/core`      | 所有 5 个下游包           |
 | `@agentinsight-sdk/tracing`   | client、openai、langchain |
 | `@agentinsight-sdk/otel`      | 无下游影响                |

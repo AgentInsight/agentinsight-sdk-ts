@@ -1,6 +1,6 @@
 {
   "name": "@agentinsight-sdk/tracing",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "author": "AgentInsight",
   "license": "MIT",
   "keywords": [
@@ -14,11 +14,11 @@
   ],
   "homepage": "https://agent.goldebridge.com",
   "bugs": {
-    "url": "https://github.com/AgentInsightSDK/agentinsight-js/issues"
+    "url": "https://github.com/agentinsight/agentinsight-sdk-ts/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agentinsight/agentinsight-js.git",
+    "url": "https://github.com/agentinsight/agentinsight-sdk-ts.git",
     "directory": "packages/tracing"
   },
   "engines": {
@@ -44,6 +44,9 @@
     "format": "prettier --write \"src/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.ts\"",
     "clean": "rm -rf dist"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "files": [
     "dist"

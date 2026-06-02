@@ -1,7 +1,7 @@
 # agentinsight-js
 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-[![CI test status](https://img.shields.io/github/actions/workflow/status/AgentInsightSDK/agentinsight-js/ci.yml?style=flat-square&label=CI)](https://github.com/AgentInsightSDK/agentinsight-js/actions/workflows/ci.yml?query=branch%3Amain)
+[![CI test status](https://img.shields.io/github/actions/workflow/status/agentinsight/agentinsight-sdk-ts/ci.yml?style=flat-square&label=CI)](https://github.com/agentinsight/agentinsight-sdk-ts/actions/workflows/ci.yml?query=branch%3Amain)
 
 AgentInsight JS/TS SDK — 用于将 AI 应用可观测性数据发送到 [AgentInsight](https://agent.goldebridge.com/platform) 平台的官方 JavaScript/TypeScript 客户端库。
 
@@ -93,8 +93,8 @@ sdk.start();
 
 ## 包列表 / Packages
 
-| 包 / Package                                    | NPM                                                                                                                       | 说明 / Description                                        | 运行环境 / Runtime |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- | ------------------ |
+| 包 / Package                                        | NPM                                                                                                                               | 说明 / Description                                        | 运行环境 / Runtime |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- | ------------------ |
 | [@agentinsight-sdk/core](./packages/core)           | [![NPM](https://img.shields.io/npm/v/@agentinsight-sdk/core.svg)](https://www.npmjs.com/package/@agentinsight-sdk/core)           | API 客户端、类型定义、常量 / API client, types, constants | Universal JS       |
 | [@agentinsight-sdk/tracing](./packages/tracing)     | [![NPM](https://img.shields.io/npm/v/@agentinsight-sdk/tracing.svg)](https://www.npmjs.com/package/@agentinsight-sdk/tracing)     | OpenTelemetry 追踪原语 / OTEL tracing primitives          | Node.js 20+        |
 | [@agentinsight-sdk/otel](./packages/otel)           | [![NPM](https://img.shields.io/npm/v/@agentinsight-sdk/otel.svg)](https://www.npmjs.com/package/@agentinsight-sdk/otel)           | OTEL 导出助手 / OTEL export helpers                       | Node.js 20+        |

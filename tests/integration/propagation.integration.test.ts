@@ -11,7 +11,10 @@ import {
   AgentInsightOtelSpanAttributes,
   getPropagatedAttributesFromContext,
 } from "@agentinsight-sdk/core";
-import { propagateAttributes, startObservation } from "@agentinsight-sdk/tracing";
+import {
+  propagateAttributes,
+  startObservation,
+} from "@agentinsight-sdk/tracing";
 import {
   context as otelContext,
   trace as otelTrace,

@@ -1,6 +1,6 @@
 {
   "name": "@agentinsight-sdk/core",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Core functions and utilities for AgentInsight packages",
   "type": "module",
   "sideEffects": false,
@@ -34,12 +34,15 @@
   ],
   "homepage": "https://agent.goldebridge.com",
   "bugs": {
-    "url": "https://github.com/AgentInsightSDK/agentinsight-js/issues"
+    "url": "https://github.com/agentinsight/agentinsight-sdk-ts/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agentinsight/agentinsight-js.git",
+    "url": "https://github.com/agentinsight/agentinsight-sdk-ts.git",
     "directory": "packages/core"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "files": [
     "dist"
