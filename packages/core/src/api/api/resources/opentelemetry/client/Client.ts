@@ -75,8 +75,8 @@ export class Opentelemetry {
    * - Implements `ExportTraceServiceRequest` message format
    *
    * **Documentation:**
-   * - Integration guide: https://agent.goldebridge.com/docs/integrations/opentelemetry
-   * - Data model: https://agent.goldebridge.com/docs/data-model
+   * - Integration guide: https://agentinsight.goldebridge.com/docs/integrations/opentelemetry
+   * - Data model: https://agentinsight.goldebridge.com/docs/data-model
    *
    * @param {AgentInsightAPI.OtelTraceRequest} request
    * @param {Opentelemetry.RequestOptions} requestOptions - Request-specific configuration.

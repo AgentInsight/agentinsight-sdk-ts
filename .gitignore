@@ -117,3 +117,4 @@ tests/manual/
 
 # VS template files
 app.ts
+e2e/

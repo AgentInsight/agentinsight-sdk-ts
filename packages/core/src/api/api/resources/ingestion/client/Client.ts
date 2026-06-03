@@ -63,7 +63,7 @@ export class Ingestion {
   /**
    * **Legacy endpoint for batch ingestion for Langfuse Observability.**
    *
-   * -> Please use the OpenTelemetry endpoint (`/api/public/otel/v1/traces`). Learn more: https://agent.goldebridge.com/docs/integrations/opentelemetry
+   * -> Please use the OpenTelemetry endpoint (`/api/public/otel/v1/traces`). Learn more: https://agentinsight.goldebridge.com/docs/integrations/opentelemetry
    *
    * Within each batch, there can be multiple events.
    * Each event has a type, an id, a timestamp, metadata and a body.
@@ -73,7 +73,7 @@ export class Ingestion {
    * I.e. if you want to update a trace, you'd use the same body id, but separate event IDs.
    *
    * Notes:
-   * - Introduction to data model: https://agent.goldebridge.com/docs/data-model
+   * - Introduction to data model: https://agentinsight.goldebridge.com/docs/data-model
    * - Batch sizes are limited to 3.5 MB in total. You need to adjust the number of events per batch accordingly.
    * - The API does not return a 4xx status code for input errors. Instead, it responds with a 207 status code, which includes a list of the encountered errors.
    *

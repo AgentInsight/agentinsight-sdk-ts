@@ -54,7 +54,7 @@ export enum AgentInsightOtelSpanAttributes {
   EXPERIMENT_ITEM_METADATA = "langfuse.experiment.item.metadata",
   EXPERIMENT_ITEM_ROOT_OBSERVATION_ID = "langfuse.experiment.item.root_observation_id",
 
-  // Compatibility - Map properties that were documented in https://agent.goldebridge.com/docs/opentelemetry/get-started#property-mapping,
+  // Compatibility - Map properties that were documented in https://agentinsight.goldebridge.com/docs/opentelemetry/get-started#property-mapping,
   // but have a new assignment
   TRACE_COMPAT_USER_ID = "langfuse.user.id",
   TRACE_COMPAT_SESSION_ID = "langfuse.session.id",

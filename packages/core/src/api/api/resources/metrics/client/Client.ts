@@ -69,7 +69,7 @@ export class Metrics {
    * - Backwards-compatible: traceName, traceRelease, traceVersion dimensions are still available on observations view
    * - High cardinality dimensions are not supported and will return a 400 error (see below)
    *
-   * For more details, see the [Metrics API documentation](https://agent.goldebridge.com/docs/metrics).
+   * For more details, see the [Metrics API documentation](https://agentinsight.goldebridge.com/docs/metrics).
    *
    * ## Available Views
    *

@@ -65,7 +65,7 @@ export class MetricsV1 {
    *
    * Consider using the [v2 metrics endpoint](/api-reference#tag/metricsv2/GET/api/public/v2/metrics) for better performance.
    *
-   * For more details, see the [Metrics API documentation](https://agent.goldebridge.com/docs/metrics).
+   * For more details, see the [Metrics API documentation](https://agentinsight.goldebridge.com/docs/metrics).
    *
    * @param {AgentInsightAPI.legacy.GetMetricsRequest} request
    * @param {MetricsV1.RequestOptions} requestOptions - Request-specific configuration.

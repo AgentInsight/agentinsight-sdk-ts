@@ -283,7 +283,7 @@ OPENAI_API_KEY=          # 部分测试需要
   AGENTINSIGHT_SECRET_KEY="sk-lf-8675a592-3d7b-4f2e-bf93-fde30299327e"
   AGENTINSIGHT_PUBLIC_KEY="pk-lf-f757665b-53d5-42b1-a759-dfa34eae8386"
   AGENTINSIGHT_BASE_URL="https://agent.goldebridge.com"
-- 连接Clickhouse数据库（agentinsight.goldebridge.com:8123, clickhouse/AgentIS2026)，验证数据入库及数据准确性
+- 连接Clickhouse数据库（agent.goldebridge.com:8123, clickhouse/AgentIS2026)，验证数据入库及数据准确性
 - 如果需要连接LLM，连接本地的Ollama的本地模型deepseek-r1:1.5b
 
 ---

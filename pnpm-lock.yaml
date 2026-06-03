@@ -17,6 +17,9 @@ importers:
       '@ai-sdk/openai':
         specifier: ^2
         version: 2.0.106(zod@3.25.76)
+      '@clickhouse/client':
+        specifier: ^1.19.0
+        version: 1.19.0
       '@eslint/js':
         specifier: ^9.32.0
         version: 9.39.4
@@ -227,6 +230,13 @@ packages:
 
   '@cfworker/json-schema@4.1.1':
     resolution: {integrity: sha512-gAmrUZSGtKc3AiBL71iNWxDsyUC5uMaKKGdvzYsBoTW/xi42JQHl7eKV2OYzCUqvc+D2RCcf7EXY2iCyFIk6og==}
+
+  '@clickhouse/client-common@1.19.0':
+    resolution: {integrity: sha512-HHQw7MUt1aFquSlnoQhlRO8e7zhRw7rJZFNSYiHP2wxzEVeoI0cX8kKoTp+xlVySvFi8s0mAC3bi8D031xmIQg==}
+
+  '@clickhouse/client@1.19.0':
+    resolution: {integrity: sha512-R/35tIFZjwRyqtTN0cnlvd45zU+YREuQ/cnfi6c+KGGkVSCF+1cl8mZ9kkxshqHx2U4YjcmPVElJaRn2bEqJ4g==}
+    engines: {node: '>=16'}
 
   '@esbuild/aix-ppc64@0.27.7':
     resolution: {integrity: sha512-EKX3Qwmhz1eMdEJokhALr0YiD0lhQNwDqkPYyPhiSwKrh7/4KRjQc04sZ8db+5DVVnZ1LmbNDI1uAMPEUBnQPg==}
@@ -2462,6 +2472,12 @@ snapshots:
       json-schema: 0.4.0
 
   '@cfworker/json-schema@4.1.1': {}
+
+  '@clickhouse/client-common@1.19.0': {}
+
+  '@clickhouse/client@1.19.0':
+    dependencies:
+      '@clickhouse/client-common': 1.19.0
 
   '@esbuild/aix-ppc64@0.27.7':
     optional: true

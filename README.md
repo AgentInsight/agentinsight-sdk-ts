@@ -3,9 +3,9 @@
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![CI test status](https://img.shields.io/github/actions/workflow/status/agentinsight/agentinsight-sdk-ts/ci.yml?style=flat-square&label=CI)](https://github.com/agentinsight/agentinsight-sdk-ts/actions/workflows/ci.yml?query=branch%3Amain)
 
-AgentInsight JS/TS SDK — 用于将 AI 应用可观测性数据发送到 [AgentInsight](https://agent.goldebridge.com/platform) 平台的官方 JavaScript/TypeScript 客户端库。
+AgentInsight JS/TS SDK — 用于将 AI 应用可观测性数据发送到 [AgentInsight](https://agentinsight.goldebridge.com/platform) 平台的官方 JavaScript/TypeScript 客户端库。
 
-The official JavaScript/TypeScript client library for sending AI application observability data to the [AgentInsight](https://agent.goldebridge.com/platform) platform.
+The official JavaScript/TypeScript client library for sending AI application observability data to the [AgentInsight](https://agentinsight.goldebridge.com/platform) platform.
 
 基于 OpenTelemetry 协议，支持自动追踪 AI 模型调用、成本分析、Prompt 管理等功能。
 
@@ -104,8 +104,8 @@ sdk.start();
 
 ## 文档 / Documentation
 
-- [AgentInsight 平台 / Platform](https://agent.goldebridge.com/platform)
-- [API 参考 / API Reference](https://agent.goldebridge.com/docs)
+- [AgentInsight 平台 / Platform](https://agentinsight.goldebridge.com/platform)
+- [API 参考 / API Reference](https://agentinsight.goldebridge.com/docs)
 
 ## 开发 / Development
 

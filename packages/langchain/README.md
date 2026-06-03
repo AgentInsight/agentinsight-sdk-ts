@@ -33,8 +33,8 @@ const model = new ChatOpenAI({
 
 ## 文档 / Documentation
 
-- [AgentInsight 平台 / Platform](https://agent.goldebridge.com/platform)
-- [API 参考 / API Reference](https://agent.goldebridge.com/docs)
+- [AgentInsight 平台 / Platform](https://agentinsight.goldebridge.com/platform)
+- [API 参考 / API Reference](https://agentinsight.goldebridge.com/docs)
 
 ## 许可证 / License
 
