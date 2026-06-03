@@ -19,9 +19,11 @@ npm install @agentinsight-sdk/tracing
 ```typescript
 import { observe } from "@agentinsight-sdk/tracing";
 
-const result = await observe({ name: "my-operation" }, async () => {
-  return "Hello, AgentInsight!";
+const myOperation = observe(async () => "Hello, AgentInsight!", {
+  name: "my-operation",
 });
+
+const result = await myOperation();
 ```
 
 ## 文档 / Documentation

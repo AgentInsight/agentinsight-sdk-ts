@@ -75,13 +75,27 @@ const result = await client.chat.completions.create({
 ### LangChain 集成 / LangChain Integration
 
 ```typescript
+import { AgentInsightSpanProcessor } from "@agentinsight-sdk/otel";
+import { NodeSDK } from "@opentelemetry/sdk-node";
 import { CallbackHandler } from "@agentinsight-sdk/langchain";
 import { ChatOpenAI } from "@langchain/openai";
 
+// 1. 初始化 AgentInsight OTEL 导出 / Initialize AgentInsight OTEL export
+const sdk = new NodeSDK({
+  spanProcessors: [
+    new AgentInsightSpanProcessor({
+      publicKey: "pk-ai-...",
+      secretKey: "sk-ai-...",
+      baseUrl: "https://agent.goldebridge.com",
+    }),
+  ],
+});
+sdk.start();
+
+// 2. 创建 CallbackHandler（业务参数）/ Create CallbackHandler (business params)
 const handler = new CallbackHandler({
-  publicKey: "pk-ai-...",
-  secretKey: "sk-ai-...",
-  baseUrl: "https://agent.goldebridge.com",
+  sessionId: "session-123",
+  tags: ["production"],
 });
 
 const model = new ChatOpenAI({
