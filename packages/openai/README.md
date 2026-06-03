@@ -18,16 +18,33 @@ npm install @agentinsight-sdk/openai
 
 ```typescript
 import { observeOpenAI } from "@agentinsight-sdk/openai";
+import { AgentInsightSpanProcessor } from "@agentinsight-sdk/otel";
+import { NodeSDK } from "@opentelemetry/sdk-node";
 import OpenAI from "openai";
 
-const client = new OpenAI();
+// 1. 初始化 AgentInsight OTEL 导出 / Initialize AgentInsight OTEL export
+const sdk = new NodeSDK({
+  spanProcessors: [
+    new AgentInsightSpanProcessor({
+      publicKey: "pk-ai-...",
+      secretKey: "sk-ai-...",
+      baseUrl: "https://agent.goldebridge.com",
+    }),
+  ],
+});
+sdk.start();
 
-const result = await observeOpenAI(client, "my-chat", () =>
-  client.chat.completions.create({
-    model: "gpt-4",
-    messages: [{ role: "user", content: "Hello!" }],
+// 2. 用 observeOpenAI 包装 OpenAI 客户端 / Wrap OpenAI client with observeOpenAI
+const client = observeOpenAI(
+  new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
   }),
 );
+
+const result = await client.chat.completions.create({
+  model: "gpt-4",
+  messages: [{ role: "user", content: "Hello!" }],
+});
 ```
 
 ## 文档 / Documentation
