@@ -1,5 +1,26 @@
 # Changelog
 
+## v0.1.3 (2026-06-22)
+
+### Changed
+
+- Aligned `usageDetails` and `costDetails` key naming with Langfuse official documentation convention
+  - `usageDetails`: `promptTokens`/`completionTokens`/`totalTokens` → `input`/`output`/`total`
+  - `costDetails`: `totalCost`/`currency` → `input`/`output`/`total`
+- Updated all JSDoc examples and documentation to reflect the new key naming convention
+- Updated integration tests to match new field names
+
+#### Packages
+
+| Package | Version | Description |
+|---------|---------|-------------|
+| `@agentinsight-sdk/core` | 0.1.3 | Core functions and utilities for AgentInsight packages |
+| `@agentinsight-sdk/tracing` | 0.1.3 | OpenTelemetry-based instrumentation methods |
+| `@agentinsight-sdk/otel` | 0.1.3 | OpenTelemetry export helpers (Node.js only) |
+| `@agentinsight-sdk/client` | 0.1.3 | Universal AgentInsight API client |
+| `@agentinsight-sdk/openai` | 0.1.3 | OpenAI SDK integration |
+| `@agentinsight-sdk/langchain` | 0.1.3 | LangChain integration |
+
 ## v0.1.1 (2026-06-02)
 
 ### Initial Release

@@ -81,7 +81,7 @@ export type AgentInsightGenerationAttributes = AgentInsightSpanAttributes & {
         [key: string]: number;
       }
     | OpenAiUsage;
-  /** Cost breakdown for the generation (totalCost, etc.) */
+  /** Cost breakdown for the generation (input, output, total, etc.) */
   costDetails?: {
     [key: string]: number;
   };

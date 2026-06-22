@@ -283,8 +283,8 @@ export function startObservation(
  *
  * generation.update({
  *   output: { role: 'assistant', content: 'Quantum computing...' },
- *   usageDetails: { promptTokens: 12, completionTokens: 150, totalTokens: 162 },
- *   costDetails: { totalCost: 0.002, currency: 'USD' }
+ *   usageDetails: { input: 12, output: 150, total: 162 },
+ *   costDetails: { input: 0.001, output: 0.002, total: 0.003 }
  * });
  * generation.end();
  *
@@ -578,11 +578,11 @@ export function startActiveObservation<
  *       generation.update({
  *         output: result.choices[0].message,
  *         usageDetails: {
- *           promptTokens: result.usage?.prompt_tokens,
- *           completionTokens: result.usage?.completion_tokens,
- *           totalTokens: result.usage?.total_tokens
+ *           input: result.usage?.prompt_tokens,
+ *           output: result.usage?.completion_tokens,
+ *           total: result.usage?.total_tokens
  *         },
- *         costDetails: { totalCost: 0.002, currency: 'USD' }
+ *         costDetails: { input: 0.001, output: 0.002, total: 0.003 }
  *       });
  *
  *       return result.choices[0].message.content;
@@ -741,7 +741,7 @@ export function startActiveObservation<
  *
  *     embedding.update({
  *       output: { embeddings: vectors },
- *       usageDetails: { totalTokens: texts.join(' ').split(' ').length }
+ *       usageDetails: { total: texts.join(' ').split(' ').length }
  *     });
  *
  *     return vectors;
@@ -1017,13 +1017,14 @@ export function setActiveTraceAsPublic() {
  *   updateActiveObservation({
  *     output: response.choices[0].message,
  *     usageDetails: {
- *       promptTokens: response.usage.prompt_tokens,
- *       completionTokens: response.usage.completion_tokens,
- *       totalTokens: response.usage.total_tokens
+ *       input: response.usage.prompt_tokens,
+ *       output: response.usage.completion_tokens,
+ *       total: response.usage.total_tokens
  *     },
  *     costDetails: {
- *       totalCost: 0.025,
- *       currency: 'USD'
+ *       input: 0.01,
+ *       output: 0.015,
+ *       total: 0.025
  *     }
  *   }, { asType: 'generation' });
  * }, {}, { asType: 'generation' });

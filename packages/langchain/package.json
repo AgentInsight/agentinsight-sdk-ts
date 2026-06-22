@@ -1,6 +1,6 @@
 {
   "name": "@agentinsight-sdk/langchain",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "AgentInsight integration for LangChain",
   "type": "module",
   "sideEffects": false,

@@ -385,7 +385,7 @@ abstract class AgentInsightBaseObservation {
    *
    * llmCall.update({
    *   output: { role: 'assistant', content: 'Machine learning is...' },
-   *   usageDetails: { promptTokens: 25, completionTokens: 150 }
+   *   usageDetails: { input: 25, output: 150 }
    * });
    * llmCall.end();
    *
@@ -1287,13 +1287,14 @@ type AgentInsightGenerationParams = {
  *   generation.update({
  *     output: response.choices[0].message,
  *     usageDetails: {
- *       promptTokens: response.usage.prompt_tokens,
- *       completionTokens: response.usage.completion_tokens,
- *       totalTokens: response.usage.total_tokens
+ *       input: response.usage.prompt_tokens,
+ *       output: response.usage.completion_tokens,
+ *       total: response.usage.total_tokens
  *     },
  *     costDetails: {
- *       totalCost: 0.025,
- *       currency: 'USD'
+ *       input: 0.01,
+ *       output: 0.015,
+ *       total: 0.025
  *     }
  *   });
  * } catch (error) {
@@ -1401,7 +1402,7 @@ type AgentInsightEmbeddingParams = {
  *     dimensions: 1536
  *   },
  *   usageDetails: {
- *     totalTokens: embedResult.tokenCount
+ *     total: embedResult.tokenCount
  *   },
  *   metadata: {
  *     processingTime: 340

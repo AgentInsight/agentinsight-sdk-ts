@@ -365,9 +365,9 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
                 level: "DEFAULT",
                 output: { content: "Hello! How can I help you?" },
                 usageDetails: {
-                  promptTokens: 3,
-                  completionTokens: 8,
-                  totalTokens: 11,
+                  input: 3,
+                  output: 8,
+                  total: 11,
                 },
               });
             },
@@ -409,9 +409,9 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
         "test-generation",
         AgentInsightOtelSpanAttributes.OBSERVATION_USAGE_DETAILS,
         JSON.stringify({
-          promptTokens: 3,
-          completionTokens: 8,
-          totalTokens: 11,
+          input: 3,
+          output: 8,
+          total: 11,
         }),
       );
 
@@ -448,9 +448,9 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
           model: "gpt-3.5-turbo",
           input: { messages: [{ role: "user", content: "test" }] },
           usageDetails: {
-            promptTokens: 10,
-            completionTokens: 15,
-            totalTokens: 25,
+            input: 10,
+            output: 15,
+            total: 25,
           },
         },
         { asType: "generation" },
@@ -481,9 +481,9 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
         "usage-generation",
         AgentInsightOtelSpanAttributes.OBSERVATION_USAGE_DETAILS,
         JSON.stringify({
-          promptTokens: 10,
-          completionTokens: 15,
-          totalTokens: 25,
+          input: 10,
+          output: 15,
+          total: 25,
         }),
       );
     });
@@ -626,7 +626,7 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
 
               parentGen.update({
                 output: { event_created: true },
-                usageDetails: { totalTokens: 5 },
+                usageDetails: { total: 5 },
               });
             },
             { asType: "generation" },
@@ -674,7 +674,7 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
       assertions.expectSpanAttribute(
         "timestamp-parent",
         AgentInsightOtelSpanAttributes.OBSERVATION_USAGE_DETAILS,
-        JSON.stringify({ totalTokens: 5 }),
+        JSON.stringify({ total: 5 }),
       );
 
       // Verify trace attributes
@@ -953,7 +953,7 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
             [0.4, 0.5, 0.6],
           ],
         },
-        usageDetails: { totalTokens: 8 },
+        usageDetails: { total: 8 },
       });
 
       embedding.end();
@@ -1860,9 +1860,9 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
                 generation.update({
                   output: { content: generatedText },
                   usageDetails: {
-                    promptTokens: 5,
-                    completionTokens: 10,
-                    totalTokens: 15,
+                    input: 5,
+                    output: 10,
+                    total: 15,
                   },
                   statusMessage: "Generation completed successfully",
                 });
@@ -2034,7 +2034,7 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
             const finalText = text + chunk3;
             generation.update({
               output: { content: finalText },
-              usageDetails: { totalTokens: 3 },
+              usageDetails: { total: 3 },
             });
 
             return finalText;
@@ -2080,7 +2080,7 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
             const responses = await Promise.all([gen1, gen2, gen3]);
             generation.update({
               output: { responses },
-              usageDetails: { totalTokens: responses.length * 5 },
+              usageDetails: { total: responses.length * 5 },
             });
 
             return responses;
@@ -2132,7 +2132,7 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
                 const responses = await Promise.all([gen1, gen2, gen3]);
                 generation.update({
                   output: { responses },
-                  usageDetails: { totalTokens: responses.length * 5 },
+                  usageDetails: { total: responses.length * 5 },
                 });
                 return responses;
               } catch (error) {
@@ -2185,7 +2185,7 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
                 step2: "completed",
                 final: finalResult,
               },
-              usageDetails: { totalTokens: 20 },
+              usageDetails: { total: 20 },
             });
 
             return finalResult;
@@ -2294,7 +2294,7 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
 
                 innerGen.update({
                   output: { content: "Step 1 complete" },
-                  usageDetails: { totalTokens: 10 },
+                  usageDetails: { total: 10 },
                 });
                 innerGen.end();
 
@@ -2319,7 +2319,7 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
 
                 innerGen2.update({
                   output: { content: "Step 2 complete" },
-                  usageDetails: { totalTokens: 15 },
+                  usageDetails: { total: 15 },
                 });
                 innerGen2.end();
 
@@ -2439,9 +2439,9 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
             generation.update({
               output: { content: generatedContent },
               usageDetails: {
-                promptTokens: 5,
-                completionTokens: generatedContent.length,
-                totalTokens: 5 + generatedContent.length,
+                input: 5,
+                output: generatedContent.length,
+                total: 5 + generatedContent.length,
               },
             });
 
@@ -2706,7 +2706,7 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
 
           embedding.update({
             output: { embeddings },
-            usageDetails: { totalTokens: 4 },
+            usageDetails: { total: 4 },
           });
 
           return { embeddings, count: embeddings.length };
@@ -2762,7 +2762,7 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
 
           answer.update({
             output: { answer: "Machine learning is..." },
-            usageDetails: { promptTokens: 50, completionTokens: 25 },
+            usageDetails: { input: 50, output: 25 },
           });
           answer.end();
 
@@ -2857,11 +2857,11 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
 
       generation.update({
         output: { content: "Hello! How can I help you today?" },
-        usageDetails: { promptTokens: 5, completionTokens: 8, totalTokens: 13 },
+        usageDetails: { input: 5, output: 8, total: 13 },
         costDetails: {
-          input_cost: 0.001,
-          output_cost: 0.002,
-          total_cost: 0.003,
+          input: 0.001,
+          output: 0.002,
+          total: 0.003,
         },
         statusMessage: "Generation completed successfully",
       });
@@ -2960,18 +2960,18 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
         "ai-response",
         AgentInsightOtelSpanAttributes.OBSERVATION_USAGE_DETAILS,
         JSON.stringify({
-          promptTokens: 5,
-          completionTokens: 8,
-          totalTokens: 13,
+          input: 5,
+          output: 8,
+          total: 13,
         }),
       );
       assertions.expectSpanAttribute(
         "ai-response",
         AgentInsightOtelSpanAttributes.OBSERVATION_COST_DETAILS,
         JSON.stringify({
-          input_cost: 0.001,
-          output_cost: 0.002,
-          total_cost: 0.003,
+          input: 0.001,
+          output: 0.002,
+          total: 0.003,
         }),
       );
       assertions.expectSpanAttribute(
@@ -3085,9 +3085,9 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
         gen2.update({
           output: { content: "I'd be happy to help with weather information!" },
           usageDetails: {
-            promptTokens: 15,
-            completionTokens: 12,
-            totalTokens: 27,
+            input: 15,
+            output: 12,
+            total: 27,
           },
         });
         gen2.end();
@@ -3124,9 +3124,9 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
         "response-generation",
         AgentInsightOtelSpanAttributes.OBSERVATION_USAGE_DETAILS,
         JSON.stringify({
-          promptTokens: 15,
-          completionTokens: 12,
-          totalTokens: 27,
+          input: 15,
+          output: 12,
+          total: 27,
         }),
       );
 
@@ -3198,9 +3198,9 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
           generation.update({
             output: { content: "Once upon a time, in a land far away..." },
             usageDetails: {
-              promptTokens: 8,
-              completionTokens: 42,
-              totalTokens: 50,
+              input: 8,
+              output: 42,
+              total: 50,
             },
           });
 
@@ -3285,9 +3285,9 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
         gen.update({
           output: { summary: `Summary ${index + 1}` },
           usageDetails: {
-            promptTokens: 10,
-            completionTokens: 5,
-            totalTokens: 15,
+            input: 10,
+            output: 5,
+            total: 15,
           },
         });
         gen.end();
@@ -3432,9 +3432,9 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
           gen.update({
             output: { content: `Response ${i}` },
             usageDetails: {
-              promptTokens: 5,
-              completionTokens: 3,
-              totalTokens: 8,
+              input: 5,
+              output: 3,
+              total: 8,
             },
           });
           gen.end();
@@ -4476,7 +4476,7 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
               setTimeout(() => {
                 processingGen.update({
                   output: { result: `processed-${taskName}` },
-                  usageDetails: { totalTokens: 5 },
+                  usageDetails: { total: 5 },
                 });
                 processingGen.end();
                 resolve(`completed-${taskName}`);
@@ -4580,8 +4580,8 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
                 modelGen.update({
                   output: { text: inferredText },
                   usageDetails: {
-                    promptTokens: prompt.length,
-                    completionTokens: inferredText.length,
+                    input: prompt.length,
+                    output: inferredText.length,
                   },
                 });
                 modelGen.end();
@@ -4794,9 +4794,9 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
               {
                 model: "gpt-4",
                 usageDetails: {
-                  promptTokens: 10,
-                  completionTokens: 20,
-                  totalTokens: 30,
+                  input: 10,
+                  output: 20,
+                  total: 30,
                 },
                 metadata: { temperature: 0.7 },
                 input: { prompt: "Hello, world!" },
@@ -4824,7 +4824,7 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
         assertions.expectSpanAttribute(
           "llm-call",
           AgentInsightOtelSpanAttributes.OBSERVATION_USAGE_DETAILS,
-          '{"promptTokens":10,"completionTokens":20,"totalTokens":30}',
+          '{"input":10,"output":20,"total":30}',
         );
         assertions.expectSpanAttribute(
           "llm-call",
@@ -4842,9 +4842,9 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
               {
                 model: "gpt-4",
                 usageDetails: {
-                  promptTokens: 10,
-                  completionTokens: 20,
-                  totalTokens: 30,
+                  input: 10,
+                  output: 20,
+                  total: 30,
                 },
                 metadata: { temperature: 0.7 },
               },
@@ -4876,7 +4876,7 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
         assertions.expectSpanAttribute(
           "llm-call",
           AgentInsightOtelSpanAttributes.OBSERVATION_USAGE_DETAILS,
-          '{"promptTokens":10,"completionTokens":20,"totalTokens":30}',
+          '{"input":10,"output":20,"total":30}',
         );
         assertions.expectSpanAttribute(
           "llm-call",
@@ -4906,9 +4906,9 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
             {
               model: "gpt-3.5-turbo",
               usageDetails: {
-                promptTokens: 15,
-                completionTokens: 25,
-                totalTokens: 40,
+                input: 15,
+                output: 25,
+                total: 40,
               },
               metadata: { provider: "openai" },
             },
@@ -4936,7 +4936,7 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
         assertions.expectSpanAttribute(
           "llmFunc",
           AgentInsightOtelSpanAttributes.OBSERVATION_USAGE_DETAILS,
-          '{"promptTokens":15,"completionTokens":25,"totalTokens":40}',
+          '{"input":15,"output":25,"total":40}',
         );
         assertions.expectSpanAttribute(
           "llmFunc",
@@ -5106,9 +5106,9 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
                   {
                     model: "gpt-4",
                     usageDetails: {
-                      promptTokens: 50,
-                      completionTokens: 100,
-                      totalTokens: 150,
+                      input: 50,
+                      output: 100,
+                      total: 150,
                     },
                     input: {
                       messages: [{ role: "user", content: "Generate a story" }],
@@ -5165,7 +5165,7 @@ describe("Tracing Methods Interoperability E2E Tests", () => {
         assertions.expectSpanAttribute(
           "combined-generation",
           AgentInsightOtelSpanAttributes.OBSERVATION_USAGE_DETAILS,
-          '{"promptTokens":50,"completionTokens":100,"totalTokens":150}',
+          '{"input":50,"output":100,"total":150}',
         );
       });
     });
