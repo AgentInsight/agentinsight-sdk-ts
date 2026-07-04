@@ -122,6 +122,61 @@ const sdk = new NodeSDK({
 sdk.start();
 ```
 
+### 追踪 Token 用量和成本 / Tracking Token Usage & Cost
+
+当手动上传 `usageDetails` 和 `costDetails` 时，**键名必须使用 `input` / `output` / `total`**，这是 AgentInsight 平台（兼容 Langfuse 协议）的命名规范。平台 UI 会自动将含 `input` 的键归类为输入、含 `output` 的键归类为输出。
+
+When manually providing `usageDetails` and `costDetails`, **key names must use `input` / `output` / `total`**. This is the naming convention of the AgentInsight platform (compatible with Langfuse protocol). The platform UI automatically categorizes keys containing `input` as input types and keys containing `output` as output types.
+
+```typescript
+import { startObservation } from "@agentinsight-sdk/tracing";
+
+const generation = startObservation(
+  "llm-call",
+  {
+    model: "gpt-4-turbo",
+    input: [{ role: "user", content: "Hello" }],
+  },
+  { asType: "generation" },
+);
+
+// ... 调用 LLM / Call LLM ...
+
+generation.update({
+  output: "Hi there!",
+  // ✅ 正确：使用 input / output / total / Correct: use input / output / total
+  usageDetails: { input: 10, output: 20, total: 30 },
+  costDetails: { input: 0.001, output: 0.002, total: 0.003 },
+
+  // ❌ 错误：不要使用 promptTokens / completionTokens / totalTokens / totalCost 等
+  // Wrong: do NOT use promptTokens / completionTokens / totalTokens / totalCost etc.
+  // usageDetails: { promptTokens: 10, completionTokens: 20, totalTokens: 30 },
+  // costDetails: { totalCost: 0.003 },
+});
+generation.end();
+```
+
+对于更细粒度的用量类型，可以添加任意键名，平台会根据键名中是否包含 `input` 或 `output` 自动归类：
+
+For more granular usage types, you can add arbitrary keys — the platform auto-categorizes them based on whether the key contains `input` or `output`:
+
+```typescript
+generation.update({
+  usageDetails: {
+    input: 10,
+    output: 20,
+    cache_read_input_tokens: 5, // 归类为输入 / categorized as input
+    audio_output_tokens: 8, // 归类为输出 / categorized as output
+  },
+  costDetails: {
+    input: 0.01,
+    cache_read_input_tokens: 0.005,
+    output: 0.02,
+    audio_output_tokens: 0.016,
+  },
+});
+```
+
 ## 包列表 / Packages
 
 | 包 / Package                                        | NPM                                                                                                                               | 说明 / Description                                        | 运行环境 / Runtime |
